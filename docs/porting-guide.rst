@@ -2456,7 +2456,7 @@ that the MECID fits within the common MECID width before calling this function.
 
 The function returns a FIRME status code. It should return ``FIRME_SUCCESS`` on
 success, or an appropriate negative FIRME error code such as
-``FIRME_INVALID_PARAMETERS``, ``FIRME_DENIED`` or ``FIRME_RETRY`` on failure.
+``FIRME_INVALID_PARAMETERS``, ``FIRME_DENIED`` or ``FIRME_BUSY`` on failure.
 
 This function needs to be implemented by a platform if it enables FIRME support
 and advertises the FIRME MECID management service.
@@ -2981,6 +2981,39 @@ frequency for the CPU's generic timer. This value will be programmed into the
 ``CNTFRQ_EL0`` register. In Arm standard platforms, it returns the base frequency
 of the system counter, which is retrieved from the first entry in the frequency
 modes table.
+
+Function : plat_is_valid_ns_address_range() [mandatory]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    Argument : uintptr_t, size_t
+    Return   : bool
+
+This function is used by the SMC argument validation framework
+(``include/common/smc_validation_framework.h``) to determine whether a memory
+range supplied by a Non-Secure caller lies entirely within Non-Secure memory.
+``smc_validate_mem_range()`` calls it, and therefore so does
+``smc_get_mem_range()``, before an EL3 runtime service acts on a
+caller-supplied address.
+
+Only the platform knows which physical ranges are Non-Secure, so the framework
+provides no default implementation. A platform that uses the framework must
+implement this function; if it does not, the build fails to link.
+
+Implementations may assume that ``base + size`` does not overflow, as
+``smc_validate_mem_range()`` rejects overflowing ranges before calling this
+function. All other validation is the platform's responsibility: the range
+should be checked against the Granule Protection Tables where RME is in use, or
+against the platform memory map otherwise, and Secure, reserved and device
+memory must be rejected.
+
+The function must return ``true`` only if the entire range lies in Non-Secure
+memory. Returning ``true`` unconditionally leaves the framework's central
+security property unenforced, as ``smc_get_mem_range()`` would then report
+``SMC_OK`` for an address in Secure RAM.
+
+See ``plat/arm/common/arm_common_helpers.c`` for a reference implementation.
 
 #define : PLAT_PERCPU_BAKERY_LOCK_SIZE [optional]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4388,6 +4421,55 @@ This API is invoked by the platform to notify its security engine to initiate
 the required steps for component activation. The function takes the component
 identifier ``lfa_component_id`` as an argument. It should return 0 on success
 or appropriate negative error codes on failures.
+
+Function : firme_plat_shared_buf_addr() [when FIRME_SUPPORT == 1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+   Argument : firme_instance_e, size_t *
+   Return   : uintptr_t
+
+This function returns the base address of the platform shared buffer used for
+the specified FIRME instance. It is used by the FIRME service layer to validate
+caller-provided shared buffer addresses for interfaces that exchange data
+through a shared buffer.
+
+For the Realm instance, the returned address must identify the RMM-EL3 shared
+buffer configured during RMM boot. The number of ``PAGE_SIZE`` pages in the
+shared buffer must be stored in the pointer passed as the second argument.
+
+If the specified FIRME instance does not have a platform-owned shared buffer,
+the function must return 0 and set the page count to 0.
+
+Function : firme_attest_plat_get_token() [when FIRME_SUPPORT == 1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+::
+
+    Arguments : uintptr_t, size_t, uintptr_t, size_t, size_t *, size_t *
+    Return    : int32_t
+
+This platform hook provides platform attestation token retrieval for the
+``FIRME_ATTEST_PAT_GET`` interface. It writes token data into the
+caller-provided shared buffer and reports the number of bytes written and
+remaining.
+
+Platforms that enable FIRME attestation token retrieval must implement this
+hook. See ``include/services/firme/firme_attestation.h`` for the detailed
+parameter and return-value contract.
+
+Macro : FIRME_ATTEST_MAX_PAT_PG_CNT [when FIRME_SUPPORT == 1]
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This macro defines the maximum platform attestation token size in pages. The maximum
+token is the value of this macro plus one. It is advertised through the FIRME
+attestation feature registers. The default value is one.
+
+Platforms that enable FIRME attestation token retrieval must override
+``FIRME_ATTEST_MAX_PAT_PG_CNT`` when their maximum platform attestation token can
+exceed one page. The value must fit in the
+``FIRME_ATTEST_FEAT_REG1_MAX_PAT_PG_CNT`` field.
 
 --------------
 

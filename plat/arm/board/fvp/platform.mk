@@ -49,6 +49,10 @@ ifeq (${ENABLE_RMM},1)
     FIRME_SUPPORT_IDE_KM	:= 1
 endif
 
+ifeq (${FIRME_SUPPORT},1)
+    FIRME_SUPPORT_ATTESTATION	:= 1
+endif
+
 # The FVP platform depends on this macro to build with correct GIC driver.
 $(eval $(call add_define,FVP_USE_GIC_DRIVER))
 
@@ -204,7 +208,7 @@ else
 					lib/cpus/aarch64/c1_nano.S		\
 					lib/cpus/aarch64/c1_ultra.S		\
 					lib/cpus/aarch64/c1_premium.S		\
-					lib/cpus/aarch64/canyon.S		\
+					lib/cpus/aarch64/c2_ultra.S		\
 					lib/cpus/aarch64/caddo.S		\
 					lib/cpus/aarch64/rosillo.S		\
 					lib/cpus/aarch64/veymont.S		\
@@ -264,12 +268,15 @@ ifeq (${COT_DESC_IN_DTB},1)
 BL2_SOURCES		+=	plat/arm/common/fconf/fconf_nv_cntr_getter.c
 endif
 
+ifneq ($(filter 1,$(ENABLE_RMM) $(FIRME_SUPPORT)),)
+BL31_SOURCES		+=	plat/arm/board/fvp/fvp_plat_attest_token.c
+endif
+
 ifeq (${ENABLE_RMM},1)
 BL2_SOURCES		+=	plat/arm/board/fvp/aarch64/fvp_helpers.S	\
 				plat/arm/board/fvp/fvp_cpu_pwr.c
 
-BL31_SOURCES		+=	plat/arm/board/fvp/fvp_plat_attest_token.c	\
-				plat/arm/board/fvp/fvp_realm_attest_key.c	\
+BL31_SOURCES		+=	plat/arm/board/fvp/fvp_realm_attest_key.c	\
 				plat/arm/board/fvp/fvp_el3_token_sign.c		\
 				plat/arm/common/plat_rmm_mem_carveout.c
 
@@ -582,9 +589,6 @@ endif
 ifeq (${ERRATA_ABI_SUPPORT}, 1)
 include plat/arm/board/fvp/fvp_cpu_errata.mk
 endif
-
-# Build macro necessary for running SPM tests on FVP platform
-$(eval $(call add_define,PLAT_TEST_SPM))
 
 ifeq (${LFA_SUPPORT},1)
 BL31_SOURCES            +=      plat/arm/board/fvp/fvp_lfa.c

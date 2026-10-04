@@ -451,6 +451,15 @@ Amlogic common code
 :|F|: tools/amlogic/Makefile
 :|F|: tools/amlogic/doimage.c
 
+Altera SocFPGA platform ports
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:|M|: Sieu Mun Tang <sieumun93@gmail.com>
+:|M|: Benjamin Jit Loon Lim <jit.loon.lim@altera.com>
+:|F|: docs/plat/altera-agilex3.rst
+:|F|: docs/plat/altera-agilex72.rst
+:|F|: plat/altera/soc/
+:|F|: drivers/altera/soc/
+
 Amlogic Meson S905 (GXBB) platform port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 :|M|: Andre Przywara <andre.przywara@arm.com>
@@ -590,12 +599,13 @@ HiSilicon Poplar platform port
 
 Intel SocFPGA platform ports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-:|M|: Sieu Mun Tang <sieu.mun.tang@intel.com>
-:|M|: Benjamin Jit Loon Lim <jit.loon.lim@intel.com>
+:|M|: Sieu Mun Tang <sieumun93@gmail.com>
+:|M|: Benjamin Jit Loon Lim <jit.loon.lim@altera.com>
+:|F|: docs/plat/intel-agilex.rst
+:|F|: docs/plat/intel-agilex5.rst
+:|F|: docs/plat/intel-stratix10.rst
 :|F|: plat/intel/soc/
 :|F|: drivers/intel/soc/
-:|F|: docs/plat/intel-agilex.rst
-:|F|: docs/plat/intel-stratix10.rst
 
 Marvell platform ports and SoC drivers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -678,6 +688,7 @@ NXP i.MX9 platform port
 :|F|: plat/imx/imx93/
 :|F|: plat/imx/imx9/imx94/
 :|F|: plat/imx/imx9/imx95/
+:|F|: plat/imx/imx9/imx952/
 
 NXP QorIQ Layerscape common code for platform ports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -768,6 +779,18 @@ QTI chipinfo, clock and platform info drivers
 :|F|: drivers/qti/clock/
 :|F|: include/drivers/qti/clock/
 :|F|: include/drivers/qti/platforminfo/
+
+QTI power drivers
+^^^^^^^^^^^^^^^^^
+:|M|: Dinesh Choudhary <idinesh@qti.qualcomm.com>
+:|F|: drivers/qti/cmd_db/
+:|F|: drivers/qti/pdc/
+:|F|: drivers/qti/pwr_utils/
+:|F|: drivers/qti/rpmh/
+:|F|: include/drivers/qti/cmd_db/
+:|F|: include/drivers/qti/pdc/
+:|F|: include/drivers/qti/pwr_utils/
+:|F|: include/drivers/qti/rpmh/
 
 QTI MSM8916 platform port
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -901,6 +924,12 @@ Altera agilex3 platform port
 :|C|: Jit Loon Lim <jit.loon.lim@altera.com>
 :|F|: plat/altera/soc/agilex3
 
+Altera agilex72 platform port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+:|M|: Benjamin Jit Loon Lim <jit.loon.lim@altera.com>
+:|C|: Jit Loon Lim <jit.loon.lim@altera.com>
+:|F|: plat/altera/soc/agilex72
+
 Secure Payloads and Dispatchers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1014,6 +1043,16 @@ Build system
 :|C|: Manish Badarkhe <manish.badarkhe@arm.com>
 :|F|: Makefile
 :|F|: make_helpers/
+
+Nix flake
+^^^^^^^^^
+:|M|: Chris Kay <chris.kay@arm.com>
+:|M|: Dániel Herczeg <daniel.herczeg@arm.com>
+:|M|: Milán Laász <milan.laasz@arm.com>
+:|F|: docs/getting_started/nix-flake.rst
+:|F|: flake.lock
+:|F|: flake.nix
+:|F|: nix/
 
 Third party libraries
 ^^^^^^^^^^^^^^^^^^^^^
